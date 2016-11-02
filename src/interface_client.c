@@ -21,6 +21,7 @@ interface_progs_1(char *host)
 	dataSet_t  merge_list_1_arg;
 	u_int  *result_5;
 	char *get_time_1_arg;
+	int i,j;
 
 #ifndef	DEBUG
 	clnt = clnt_create (host, INTERFACE_PROGS, DIR_PROG_VERS, "udp");
@@ -30,15 +31,34 @@ interface_progs_1(char *host)
 	}
 #endif	/* DEBUG */
 
-	result_1 = read_dir_1(&read_dir_1_arg, clnt);
+	/*result_1 = read_dir_1(&read_dir_1_arg, clnt);
 	if (result_1 == (dir_res *) NULL) {
 		clnt_perror (clnt, "call failed");
-	}
+	}*/
+	add_matrix_1_arg.mat_elements[0] = 1;
+	add_matrix_1_arg.mat_elements[1] = 2;
+	add_matrix_1_arg.mat_elements[2] = 3;
+	add_matrix_1_arg.mat_elements[3] = 4;
+
+	add_matrix_1_arg.mat_elements[0] = 1;
+	add_matrix_1_arg.mat_elements[1] = 2;
+	add_matrix_1_arg.mat_elements[2] = 3;
+	add_matrix_1_arg.mat_elements[3] = 4;
+
+	add_matrix_1_arg.m = 2;
+	add_matrix_1_arg.n = 2;
+
 	result_2 = add_matrix_1(&add_matrix_1_arg, clnt);
 	if (result_2 == (matrix_t *) NULL) {
 		clnt_perror (clnt, "call failed");
 	}
-	result_3 = reverse_echo_1(&reverse_echo_1_arg, clnt);
+
+	for(i=0; i<result_2->m; i++){
+		for(j=0; i<result_2->n; j++){
+			printf("C[%i,%j] = %i \n", result_2->mat_elements[i*result_2->n+j]);
+		}
+	}
+	/*result_3 = reverse_echo_1(&reverse_echo_1_arg, clnt);
 	if (result_3 == (text_t *) NULL) {
 		clnt_perror (clnt, "call failed");
 	}
@@ -49,7 +69,7 @@ interface_progs_1(char *host)
 	result_5 = get_time_1((void*)&get_time_1_arg, clnt);
 	if (result_5 == (u_int *) NULL) {
 		clnt_perror (clnt, "call failed");
-	}
+	}*/
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */
