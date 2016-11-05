@@ -10,7 +10,7 @@ xdr_directoryName_t (XDR *xdrs, directoryName_t *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, objp, 128))
+	 if (!xdr_string (xdrs, objp, 255))
 		 return FALSE;
 	return TRUE;
 }
@@ -60,7 +60,7 @@ xdr_elements_t (XDR *xdrs, elements_t objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_vector (xdrs, (char *)objp, 20000,
+	 if (!xdr_vector (xdrs, (char *)objp, 100,
 		sizeof (int), (xdrproc_t) xdr_int))
 		 return FALSE;
 	return TRUE;
@@ -81,7 +81,7 @@ xdr_matrices (XDR *xdrs, matrices *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_elements_t (xdrs, objp->mat_elements))
+	 if (!xdr_elements_t (xdrs, objp->elements))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->num_of_matrices))
 		 return FALSE;
@@ -97,7 +97,7 @@ xdr_text_t (XDR *xdrs, text_t *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, objp, 1024))
+	 if (!xdr_string (xdrs, objp, 100))
 		 return FALSE;
 	return TRUE;
 }
@@ -107,7 +107,7 @@ xdr_data_t (XDR *xdrs, data_t objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_opaque (xdrs, objp, 1024))
+	 if (!xdr_opaque (xdrs, objp, 100))
 		 return FALSE;
 	return TRUE;
 }

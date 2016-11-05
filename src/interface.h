@@ -32,12 +32,12 @@ struct dir_res {
 };
 typedef struct dir_res dir_res;
 
-typedef int elements_t[20000];
+typedef int elements_t[100];
 
 typedef struct matrices matrix_t;
 
 struct matrices {
-	elements_t mat_elements;
+	elements_t elements;
 	int num_of_matrices;
 	int m;
 	int n;
@@ -46,7 +46,7 @@ typedef struct matrices matrices;
 
 typedef char *text_t;
 
-typedef char data_t[1024];
+typedef char data_t[100];
 
 typedef struct set dataSet_t;
 

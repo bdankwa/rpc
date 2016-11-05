@@ -2,7 +2,7 @@
 * Protocol for READ_DIR
 *****************************************************/
 
-typedef string directoryName_t<128>;
+typedef string directoryName_t<255>;
 typedef struct directoryNode *fileList_t;
 
 struct directoryNode
@@ -22,12 +22,12 @@ union dir_res switch (int errno){
 * Protocol for ADD_MATRIX
 *****************************************************/
 
-typedef int elements_t[20000];
+typedef int elements_t[100];
 typedef struct matrices matrix_t;
 
 struct matrices
 {
-	elements_t mat_elements;
+	elements_t elements;
 	int num_of_matrices;
 	int m;
 	int n;
@@ -37,13 +37,13 @@ struct matrices
 * Protocol for REVERSE_ECHO
 *****************************************************/
 
-typedef string text_t <1024>;
+typedef string text_t<100>;
 
 /****************************************************
 * Protocol for MERGE_LIST
 *****************************************************/
 
-typedef opaque data_t[1024];
+typedef opaque data_t[100];
 typedef struct set dataSet_t;
 
 struct set

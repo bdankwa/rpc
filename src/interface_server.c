@@ -26,28 +26,6 @@ add_matrix_1_svc(matrix_t *argp, struct svc_req *rqstp)
 	/*
 	 * insert server code here
 	 */
-	int m = argp->m;
-	int n = argp->n;
-
-	int i, j;
-
-	int A[m*n];
-	int B[m*n];
-	int C[m*n];
-
-	memcpy(A, argp->mat_elements, sizeof(int)*m*n);
-	memcpy(B, (argp->mat_elements + m*n), sizeof(int)*m*n);
-
-	for(i=0; i< m; i++){
-		for(j=0; j<n; j++){
-			/*for(k=0; k<p; k++){
-				C[i*n+j] = A[i*n+k] + B[k*n+j];
-			}*/
-			C[i*n+j] = A[i*n+j] + B[i*n+j];
-		}
-	}
-
-	memcpy(result.mat_elements, C, sizeof(int)*m*n);
 
 	return &result;
 }
@@ -84,6 +62,7 @@ get_time_1_svc(void *argp, struct svc_req *rqstp)
 	/*
 	 * insert server code here
 	 */
+	result = time(NULL);
 
 	return &result;
 }
