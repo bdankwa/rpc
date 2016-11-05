@@ -11,7 +11,7 @@ struct directoryNode
 	fileList_t next;
 };
 
-union dir_res switch (int errno){
+union dir_res switch (int err){
 	case 0:
 		fileList_t list;
 	default:
@@ -37,7 +37,7 @@ struct matrices
 * Protocol for REVERSE_ECHO
 *****************************************************/
 
-typedef opaque line_t[100];
+typedef string line_t<>;
 typedef struct text text_t;
 
 struct text
@@ -50,12 +50,12 @@ struct text
 * Protocol for MERGE_LIST
 *****************************************************/
 
-typedef opaque data_t[100];
+typedef string data_t<>;
 typedef struct set dataSet_t;
 
 struct set
 {
-	data_t elements;
+	data_t elements[100];
 	int num_of_sets;
 	int first_len;
 	int second_len;	
