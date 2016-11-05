@@ -37,7 +37,14 @@ struct matrices
 * Protocol for REVERSE_ECHO
 *****************************************************/
 
-typedef string text_t<100>;
+typedef opaque line_t[100];
+typedef struct text text_t;
+
+struct text
+{
+	line_t elements;
+	int num_of_chars;
+};
 
 /****************************************************
 * Protocol for MERGE_LIST

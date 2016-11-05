@@ -44,7 +44,15 @@ struct matrices {
 };
 typedef struct matrices matrices;
 
-typedef char *text_t;
+typedef char line_t[100];
+
+typedef struct text text_t;
+
+struct text {
+	line_t elements;
+	int num_of_chars;
+};
+typedef struct text text;
 
 typedef char data_t[100];
 
@@ -108,7 +116,9 @@ extern  bool_t xdr_dir_res (XDR *, dir_res*);
 extern  bool_t xdr_elements_t (XDR *, elements_t);
 extern  bool_t xdr_matrix_t (XDR *, matrix_t*);
 extern  bool_t xdr_matrices (XDR *, matrices*);
+extern  bool_t xdr_line_t (XDR *, line_t);
 extern  bool_t xdr_text_t (XDR *, text_t*);
+extern  bool_t xdr_text (XDR *, text*);
 extern  bool_t xdr_data_t (XDR *, data_t);
 extern  bool_t xdr_dataSet_t (XDR *, dataSet_t*);
 extern  bool_t xdr_set (XDR *, set*);
@@ -121,7 +131,9 @@ extern bool_t xdr_dir_res ();
 extern bool_t xdr_elements_t ();
 extern bool_t xdr_matrix_t ();
 extern bool_t xdr_matrices ();
+extern bool_t xdr_line_t ();
 extern bool_t xdr_text_t ();
+extern bool_t xdr_text ();
 extern bool_t xdr_data_t ();
 extern bool_t xdr_dataSet_t ();
 extern bool_t xdr_set ();

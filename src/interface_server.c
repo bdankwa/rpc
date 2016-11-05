@@ -22,10 +22,21 @@ matrix_t *
 add_matrix_1_svc(matrix_t *argp, struct svc_req *rqstp)
 {
 	static matrix_t  result;
+	int i, j, n, m;
 
 	/*
 	 * insert server code here
 	 */
+	m = argp->m;
+	n = argp->n;
+
+	for(i=0; i<m; i++){
+		for(j=0; j<n; j++){
+			result.elements[i*n+j] = argp->elements[i*n+j] + argp->elements[n*m + i*n+j];
+		}
+	}
+	result.m = m;
+	result.n = n;
 
 	return &result;
 }
@@ -34,10 +45,16 @@ text_t *
 reverse_echo_1_svc(text_t *argp, struct svc_req *rqstp)
 {
 	static text_t  result;
+	int i, n;
 
 	/*
 	 * insert server code here
 	 */
+	n = argp->num_of_chars;
+	for(i=0; i<n; i++){
+		result.elements[i] = argp->elements[n-i-1];
+	}
+	result.num_of_chars = n;
 
 	return &result;
 }
@@ -50,6 +67,28 @@ merge_list_1_svc(dataSet_t *argp, struct svc_req *rqstp)
 	/*
 	 * insert server code here
 	 */
+	int i, j, k, m, n;
+
+	m = argp->first_len;
+	n = argp->second_len;
+
+	/*
+	 * insert server code here
+	 */
+	result.elements[0] = argp->elements[0];
+	k = 1;
+	for(i=1; i<m+n; i++){
+		for(j=0; j<i; j++){
+			if(argp->elements[i] == result.elements[j]){
+				continue;
+			}
+		}
+		result.elements[k] = argp->elements[i];
+		k++;
+	}
+
+	result.first_len = k;
+	result.num_of_sets = 1;
 
 	return &result;
 }

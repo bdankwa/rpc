@@ -22,8 +22,7 @@ typedef struct {
 	int list2_len;
 }command_t;
 
-void parseStdIO(char* line, command_t* command){
-
+void parseStdIO(char* line, command_t* cmd){
 
 }
 
@@ -62,7 +61,7 @@ interface_progs_1(char *host)
 			case DATETIME:
 				result_5 = get_time_1((void*)&get_time_1_arg, clnt);
 				if (result_5 == (u_int *) NULL) {
-					clnt_perror (clnt, "call failed");
+					clnt_perror (clnt, "call failed 1");
 				}
 				break;
 			case MERGE:
@@ -70,33 +69,48 @@ interface_progs_1(char *host)
 					merge_list_1_arg.elements[i] = cmd.list1[i];
 				}
 				merge_list_1_arg.first_len = i+1;
-				for(i=0; i<cmd.list1_len; i++){
-					merge_list_1_arg.elements[i] = cmd.list1[i];
+				for(i=0; i<cmd.list2_len; i++){
+					merge_list_1_arg.elements[i] = cmd.list2[i];
 				}
 				merge_list_1_arg.second_len = i+1;
 				merge_list_1_arg.num_of_sets = 2;
 
 				result_4 = merge_list_1(&merge_list_1_arg, clnt);
 				if (result_4 == (dataSet_t *) NULL) {
-					clnt_perror (clnt, "call failed");
+					clnt_perror (clnt, "call failed 2");
 				}
 				break;
 			case REV_ECHO:
+				for(i=0; i<cmd.list1_len; i++){
+					reverse_echo_1_arg.elements[i] = cmd.list1[i];
+				}
+				reverse_echo_1_arg.num_of_chars = cmd.list1_len;
+
 				result_3 = reverse_echo_1(&reverse_echo_1_arg, clnt);
 				if (result_3 == (text_t *) NULL) {
-					clnt_perror (clnt, "call failed");
+					clnt_perror (clnt, "call failed 3");
 				}
 				break;
 			case LISTDIR:
 				result_1 = read_dir_1(&read_dir_1_arg, clnt);
 				if (result_1 == (dir_res *) NULL) {
-					clnt_perror (clnt, "call failed");
+					clnt_perror (clnt, "call failed 4");
 				}
 				break;
 			case ADD_MAT:
+				for(i=0; i<cmd.list1_len; i++){
+					add_matrix_1_arg.elements[i] = cmd.list1[i];
+				}
+				add_matrix_1_arg.m = i+1;
+				for(i=0; i<cmd.list2_len; i++){
+					add_matrix_1_arg.elements[i] = cmd.list2[i];
+				}
+				add_matrix_1_arg.n = i+1;
+				add_matrix_1_arg.num_of_matrices = 2;
+
 				result_2 = add_matrix_1(&add_matrix_1_arg, clnt);
 				if (result_2 == (matrix_t *) NULL) {
-					clnt_perror (clnt, "call failed");
+					clnt_perror (clnt, "call failed 5");
 				};
 				break;
 			default:

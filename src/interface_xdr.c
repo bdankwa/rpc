@@ -93,11 +93,33 @@ xdr_matrices (XDR *xdrs, matrices *objp)
 }
 
 bool_t
+xdr_line_t (XDR *xdrs, line_t objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_opaque (xdrs, objp, 100))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_text_t (XDR *xdrs, text_t *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, objp, 100))
+	 if (!xdr_text (xdrs, objp))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_text (XDR *xdrs, text *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_line_t (xdrs, objp->elements))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->num_of_chars))
 		 return FALSE;
 	return TRUE;
 }
