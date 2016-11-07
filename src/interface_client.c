@@ -5,13 +5,16 @@
  */
 
 #include "interface.h"
+#include <time.h>
+#include <stdlib.h>
 
 typedef enum {
 	DATETIME,
 	MERGE,
 	REV_ECHO,
 	LISTDIR,
-	ADD_MAT
+	ADD_MAT,
+	QUIT
 } operation_t;
 
 typedef struct {
@@ -23,6 +26,68 @@ typedef struct {
 }command_t;
 
 void parseStdIO(char* line, command_t* cmd){
+
+	const char* date_command = "rdate";
+	const char* merge_command = "rmerge";
+	const char* echo_command = "recho";
+	const char* rdir_command = "rdir";
+	const char* addmat_command = "raddmat";
+	const char* quit_command = "q";
+
+	int i, j;
+
+
+	if(!strncmp(line, date_command, 5)){
+		//printf("you entered data command \n %s", line);
+		cmd->operation = DATETIME;
+
+	}
+	else if(!strncmp(line, merge_command, 6)){
+
+		cmd->list1[0] = "ak";
+		cmd->list1[1] = "bf";
+		cmd->list2[0] = "ak";
+		cmd->list2[1] = "ct";
+
+		cmd->list1_len = 2;
+		cmd->list2_len = 2;
+
+		cmd->operation = MERGE;
+		
+	}
+	else if(!strncmp(line, echo_command, 5)){
+        		
+		cmd->list1[0] = "d";
+		cmd->list1[1] = "e";
+		cmd->list1[2] = "a";
+		cmd->list1[3] = "d";
+		cmd->list1[4] = " ";
+		cmd->list1[5] = "b";
+		cmd->list1[6] = "e";
+		cmd->list1[7] = "e";
+		cmd->list1[8] = "f";
+		cmd->list1_len = 9;
+		cmd->operation = REV_ECHO;
+	}
+	else if(!strncmp(line, rdir_command, 4)){
+
+	}
+	else if(!strncmp(line, addmat_command, 7)){
+
+		for(i=0; i<4; i++){
+			cmd->list1[i] = "1";
+			cmd->list2[i] = "25";
+		}
+		cmd->operation = ADD_MAT;
+		cmd->list1_len = 4;
+		cmd->list2_len = 4;
+	}
+	else if(!strncmp(line, quit_command, 1)){
+		cmd->operation = QUIT;
+	}
+	else{
+
+	}
 
 }
 
@@ -63,27 +128,42 @@ interface_progs_1(char *host)
 				if (result_5 == (u_int *) NULL) {
 					clnt_perror (clnt, "call failed 1");
 				}
+				printf("Time on server: %s \n", ctime((time_t*)result_5));
 				break;
 			case MERGE:
 				for(i=0; i<cmd.list1_len; i++){
-					merge_list_1_arg.elements[i] = cmd.list1[i];
+					
+					//merge_list_1_arg.elements[i] = cmd.list1[i];
+					
+					merge_list_1_arg.elements[i] = malloc(256);
+					strcpy(merge_list_1_arg.elements[i], cmd.list1[i]);
+				
 				}
-				merge_list_1_arg.first_len = i+1;
+				merge_list_1_arg.first_len = cmd.list1_len;
 				for(i=0; i<cmd.list2_len; i++){
-					merge_list_1_arg.elements[i] = cmd.list2[i];
+					
+					//merge_list_1_arg.elements[cmd.list1_len + i] = cmd.list2[i];
+					merge_list_1_arg.elements[cmd.list1_len + i] = malloc(256);
+					strcpy(merge_list_1_arg.elements[cmd.list1_len + i], cmd.list2[i]);
 				}
-				merge_list_1_arg.second_len = i+1;
+				merge_list_1_arg.second_len = cmd.list2_len;
 				merge_list_1_arg.num_of_sets = 2;
 
 				result_4 = merge_list_1(&merge_list_1_arg, clnt);
-				if (result_4 == (dataSet_t *) NULL) {
+				/*if (result_4 == (dataSet_t *) NULL) {
 					clnt_perror (clnt, "call failed 2");
 				}
+				printf("Merged list : ");
+				for(i=0; i<result_4->first_len; i++){
+					printf("%s ", result_4->elements[i]);
+				}
+				printf("\n");*/
 				break;
 			case REV_ECHO:
 				for(i=0; i<cmd.list1_len; i++){
-					reverse_echo_1_arg.elements[i] = cmd.list1[i];
+					reverse_echo_1_arg.elements[i] = (char)*cmd.list1[i];
 				}
+				//reverse_echo_1_arg.elements = list1[0];
 				reverse_echo_1_arg.num_of_chars = cmd.list1_len;
 
 				result_3 = reverse_echo_1(&reverse_echo_1_arg, clnt);
@@ -99,23 +179,37 @@ interface_progs_1(char *host)
 				break;
 			case ADD_MAT:
 				for(i=0; i<cmd.list1_len; i++){
-					add_matrix_1_arg.elements[i] = cmd.list1[i];
+					add_matrix_1_arg.elements[i] = atoi(cmd.list1[i]);
+					//printf("mat A[%i] = %i \n ", i, add_matrix_1_arg.elements[i]);
 				}
-				add_matrix_1_arg.m = i+1;
+				add_matrix_1_arg.m = 2;
 				for(i=0; i<cmd.list2_len; i++){
-					add_matrix_1_arg.elements[i] = cmd.list2[i];
+					add_matrix_1_arg.elements[4+i] = atoi(cmd.list2[i]);
+					//printf("mat B[%i] = %i \n ", i, add_matrix_1_arg.elements[4+i]);
 				}
-				add_matrix_1_arg.n = i+1;
+				add_matrix_1_arg.n = 2;
 				add_matrix_1_arg.num_of_matrices = 2;
 
 				result_2 = add_matrix_1(&add_matrix_1_arg, clnt);
 				if (result_2 == (matrix_t *) NULL) {
 					clnt_perror (clnt, "call failed 5");
 				};
+				printf("Sum of matrices: \n");
+				for(i=0; i< result_2->m; i++){
+					for(j=0; j< result_2->n; j++){
+						printf("%i ",result_2->elements[i*result_2->n + j]);
+					}
+					printf("\n");					
+				}
+				printf("\n");
 				break;
+			case QUIT:
+				return;
 			default:
 				break;
 			}
+			cmd.operation = 99; // reset command
+			break;
 		}
 	}
 #ifndef	DEBUG

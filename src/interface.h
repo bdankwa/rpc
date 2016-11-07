@@ -25,7 +25,7 @@ struct directoryNode {
 typedef struct directoryNode directoryNode;
 
 struct dir_res {
-	int errno;
+	int err;
 	union {
 		fileList_t list;
 	} dir_res_u;
@@ -44,7 +44,7 @@ struct matrices {
 };
 typedef struct matrices matrices;
 
-typedef char line_t[100];
+typedef char *line_t;
 
 typedef struct text text_t;
 
@@ -54,12 +54,12 @@ struct text {
 };
 typedef struct text text;
 
-typedef char data_t[100];
+typedef char *data_t;
 
 typedef struct set dataSet_t;
 
 struct set {
-	data_t elements;
+	data_t elements[100];
 	int num_of_sets;
 	int first_len;
 	int second_len;
@@ -116,10 +116,10 @@ extern  bool_t xdr_dir_res (XDR *, dir_res*);
 extern  bool_t xdr_elements_t (XDR *, elements_t);
 extern  bool_t xdr_matrix_t (XDR *, matrix_t*);
 extern  bool_t xdr_matrices (XDR *, matrices*);
-extern  bool_t xdr_line_t (XDR *, line_t);
+extern  bool_t xdr_line_t (XDR *, line_t*);
 extern  bool_t xdr_text_t (XDR *, text_t*);
 extern  bool_t xdr_text (XDR *, text*);
-extern  bool_t xdr_data_t (XDR *, data_t);
+extern  bool_t xdr_data_t (XDR *, data_t*);
 extern  bool_t xdr_dataSet_t (XDR *, dataSet_t*);
 extern  bool_t xdr_set (XDR *, set*);
 

@@ -3,7 +3,8 @@
  * These are only templates and you can use them
  * as a guideline for developing your own functions.
  */
-
+#include <dirent.h>
+#include <errno.h>
 #include "interface.h"
 
 dir_res *
@@ -14,6 +15,36 @@ read_dir_1_svc(directoryName_t *argp, struct svc_req *rqstp)
 	/*
 	 * insert server code here
 	 */
+	DIR *dirp;
+    struct dirent *d;
+
+    fileList_t nl;
+    fileList_t *nlp;
+
+    dirp = opendir(*argp);
+    if (dirp == NULL)
+    {
+    	result.err = errno;
+        return (&result);
+    }
+
+    /* Free previous result */
+
+    xdr_free(xdr_dir_res, &result);
+
+    nlp = &result.dir_res_u.list;
+    while (d = readdir(dirp))
+    {
+        nl = *nlp = (directoryNode *) malloc(sizeof(directoryNode));
+        nl->name = strdup(d->d_name);
+        nlp = &nl->next;
+    }
+    *nlp = NULL;
+
+    /* Return the result */
+
+    result.err = 0;
+    closedir(dirp);
 
 	return &result;
 }
@@ -52,7 +83,7 @@ reverse_echo_1_svc(text_t *argp, struct svc_req *rqstp)
 	 */
 	n = argp->num_of_chars;
 	for(i=0; i<n; i++){
-		result.elements[i] = argp->elements[n-i-1];
+		result.elements[i] = (char)argp->elements[n-i-1];
 	}
 	result.num_of_chars = n;
 
@@ -88,6 +119,7 @@ merge_list_1_svc(dataSet_t *argp, struct svc_req *rqstp)
 	}
 
 	result.first_len = k;
+	result.second_len = 0;
 	result.num_of_sets = 1;
 
 	return &result;

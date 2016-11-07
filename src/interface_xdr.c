@@ -42,9 +42,9 @@ xdr_dir_res (XDR *xdrs, dir_res *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_int (xdrs, &objp->errno))
+	 if (!xdr_int (xdrs, &objp->err))
 		 return FALSE;
-	switch (objp->errno) {
+	switch (objp->err) {
 	case 0:
 		 if (!xdr_fileList_t (xdrs, &objp->dir_res_u.list))
 			 return FALSE;
@@ -93,11 +93,11 @@ xdr_matrices (XDR *xdrs, matrices *objp)
 }
 
 bool_t
-xdr_line_t (XDR *xdrs, line_t objp)
+xdr_line_t (XDR *xdrs, line_t *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_opaque (xdrs, objp, 100))
+	 if (!xdr_string (xdrs, objp, ~0))
 		 return FALSE;
 	return TRUE;
 }
@@ -117,7 +117,7 @@ xdr_text (XDR *xdrs, text *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_line_t (xdrs, objp->elements))
+	 if (!xdr_line_t (xdrs, &objp->elements))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->num_of_chars))
 		 return FALSE;
@@ -125,11 +125,11 @@ xdr_text (XDR *xdrs, text *objp)
 }
 
 bool_t
-xdr_data_t (XDR *xdrs, data_t objp)
+xdr_data_t (XDR *xdrs, data_t *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_opaque (xdrs, objp, 100))
+	 if (!xdr_string (xdrs, objp, ~0))
 		 return FALSE;
 	return TRUE;
 }
@@ -149,7 +149,9 @@ xdr_set (XDR *xdrs, set *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_data_t (xdrs, objp->elements))
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->elements, 100,
+		sizeof (data_t), (xdrproc_t) xdr_data_t))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->num_of_sets))
 		 return FALSE;
