@@ -6,6 +6,7 @@
 
 #include "interface.h"
 #include <time.h>
+#include <stdlib.h>
 
 typedef enum {
 	DATETIME,
@@ -43,9 +44,30 @@ void parseStdIO(char* line, command_t* cmd){
 	}
 	else if(!strncmp(line, merge_command, 6)){
 
+		cmd->list1[0] = "ak";
+		cmd->list1[1] = "bf";
+		cmd->list2[0] = "ak";
+		cmd->list2[1] = "ct";
+
+		cmd->list1_len = 2;
+		cmd->list2_len = 2;
+
+		cmd->operation = MERGE;
+		
 	}
 	else if(!strncmp(line, echo_command, 5)){
-
+        		
+		cmd->list1[0] = "dead beef";
+		/*cmd->list1[1] = "e";
+		cmd->list1[2] = "a";
+		cmd->list1[3] = "d";
+		cmd->list1[4] = " ";
+		cmd->list1[5] = "b";
+		cmd->list1[6] = "e";
+		cmd->list1[7] = "e";
+		cmd->list1[8] = "f"; */
+		cmd->list1_len = 9;
+		cmd->operation = REV_ECHO;
 	}
 	else if(!strncmp(line, rdir_command, 4)){
 
@@ -69,6 +91,7 @@ void parseStdIO(char* line, command_t* cmd){
 
 }
 
+
 void
 interface_progs_1(char *host)
 {
@@ -79,14 +102,16 @@ interface_progs_1(char *host)
 	matrix_t  add_matrix_1_arg;
 	text_t  *result_3;
 	text_t  reverse_echo_1_arg;
-	dataSet_t  *result_4;
-	dataSet_t  merge_list_1_arg;
+	set_t  *result_4;
+	set_t  merge_list_1_arg;
 	u_int  *result_5;
 	char *get_time_1_arg;
 	int i, j;
+	set_t* slp;
 
 	command_t cmd;
 	char line[1024];
+
 
 #ifndef	DEBUG
 	clnt = clnt_create (host, INTERFACE_PROGS, DIR_PROG_VERS, "udp");
@@ -95,7 +120,6 @@ interface_progs_1(char *host)
 		exit (1);
 	}
 #endif	/* DEBUG */
-
 	while(1){
 		printf("RPC> ");
 		while(fgets(line, sizeof(line), stdin) != NULL){
@@ -109,32 +133,44 @@ interface_progs_1(char *host)
 				printf("Time on server: %s \n", ctime((time_t*)result_5));
 				break;
 			case MERGE:
-				for(i=0; i<cmd.list1_len; i++){
-					merge_list_1_arg.elements[i] = cmd.list1[i];
-				}
-				merge_list_1_arg.first_len = i+1;
-				for(i=0; i<cmd.list2_len; i++){
-					merge_list_1_arg.elements[i] = cmd.list2[i];
-				}
-				merge_list_1_arg.second_len = i+1;
-				merge_list_1_arg.num_of_sets = 2;
+				merge_list_1_arg.text1 = strdup(cmd.list1[0]);
+				merge_list_1_arg.text2 = strdup(cmd.list1[1]);
+				merge_list_1_arg.text3 = strdup(cmd.list2[0]);
 
 				result_4 = merge_list_1(&merge_list_1_arg, clnt);
-				if (result_4 == (dataSet_t *) NULL) {
+				if (result_4 == (set_t *) NULL) {
 					clnt_perror (clnt, "call failed 2");
 				}
+				printf("Merged list : ");
+				printf("%s ", result_4->text1);
+				if(result_4->num_of_objects > 1){
+					printf("%s ", result_4->text2);
+				}
+				if(result_4->num_of_objects > 2){
+					printf("%s ", result_4->text3);
+				}
+				printf("\n");
+
+				/*for(i=0; i<result_4->first_len; i++){
+					printf("%s ", result_4->elements[i]);
+				}
+				printf("\n");*/
 				break;
 			case REV_ECHO:
 				/*for(i=0; i<cmd.list1_len; i++){
-					reverse_echo_1_arg.elements[i] = cmd.list1[i];
+					reverse_echo_1_arg.elements[i] = (char)*cmd.list1[i];
+					reverse_echo_1_arg.elements = strdup(cmd.list1);
 				}*/
-				reverse_echo_1_arg.elements = cmd.list1[0];
+				//reverse_echo_1_arg.elements = list1[0];
+				reverse_echo_1_arg.elements = strdup(cmd.list1[0]);
 				reverse_echo_1_arg.num_of_chars = cmd.list1_len;
 
 				result_3 = reverse_echo_1(&reverse_echo_1_arg, clnt);
 				if (result_3 == (text_t *) NULL) {
 					clnt_perror (clnt, "call failed 3");
 				}
+				printf("reversed string: %s \n", result_3->elements);
+				
 				break;
 			case LISTDIR:
 				result_1 = read_dir_1(&read_dir_1_arg, clnt);

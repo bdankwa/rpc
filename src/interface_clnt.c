@@ -54,15 +54,15 @@ reverse_echo_1(text_t *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-dataSet_t *
-merge_list_1(dataSet_t *argp, CLIENT *clnt)
+set_t *
+merge_list_1(set_t *argp, CLIENT *clnt)
 {
-	static dataSet_t clnt_res;
+	static set_t clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	if (clnt_call (clnt, MERGE_LIST,
-		(xdrproc_t) xdr_dataSet_t, (caddr_t) argp,
-		(xdrproc_t) xdr_dataSet_t, (caddr_t) &clnt_res,
+		(xdrproc_t) xdr_set_t, (caddr_t) argp,
+		(xdrproc_t) xdr_set_t, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}

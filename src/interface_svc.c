@@ -23,7 +23,7 @@ interface_progs_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		directoryName_t read_dir_1_arg;
 		matrix_t add_matrix_1_arg;
 		text_t reverse_echo_1_arg;
-		dataSet_t merge_list_1_arg;
+		set_t merge_list_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -53,8 +53,8 @@ interface_progs_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		break;
 
 	case MERGE_LIST:
-		_xdr_argument = (xdrproc_t) xdr_dataSet_t;
-		_xdr_result = (xdrproc_t) xdr_dataSet_t;
+		_xdr_argument = (xdrproc_t) xdr_set_t;
+		_xdr_result = (xdrproc_t) xdr_set_t;
 		local = (char *(*)(char *, struct svc_req *)) merge_list_1_svc;
 		break;
 

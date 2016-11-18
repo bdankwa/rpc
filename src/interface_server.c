@@ -81,7 +81,8 @@ reverse_echo_1_svc(text_t *argp, struct svc_req *rqstp)
 	/*
 	 * insert server code here
 	 */
-	n = argp->num_of_chars;
+	n = strlen(argp->elements);
+	result.elements = (char*)malloc(strlen(argp->elements));
 	for(i=0; i<n; i++){
 		result.elements[i] = (char)argp->elements[n-i-1];
 	}
@@ -90,31 +91,75 @@ reverse_echo_1_svc(text_t *argp, struct svc_req *rqstp)
 	return &result;
 }
 
-dataSet_t *
-merge_list_1_svc(dataSet_t *argp, struct svc_req *rqstp)
+set_t *
+merge_list_1_svc(set_t *argp, struct svc_req *rqstp)
 {
-	static dataSet_t  result;
+	static set_t  result;
+	int i, j, k;
 
 	/*
 	 * insert server code here
 	 */
+	result.num_of_objects = 0;
+	result.text1 = strdup("empty");
+	result.text2 = strdup("empty");
+	result.text3 = strdup("empty");
+
+	result.text1 = strdup(argp->text1);
+	result.num_of_objects++;
+	if(strcmp(argp->text2, result.text1)){
+		result.text2 = strdup(argp->text2);
+		result.num_of_objects++;		
+	}
+	if(result.num_of_objects > 1){
+		if(strcmp(argp->text3, result.text1) && strcmp(argp->text3, result.text2) ){
+			result.text3 = strdup(argp->text3);
+			result.num_of_objects++;		
+		}
+	}
+	else if(strcmp(argp->text3, result.text1)){
+		result.text2 = strdup(argp->text3);
+		result.num_of_objects++;		
+	}
+	else{} 
+	
+	/*k = 1;
+	for(i=1; i<10; i++){
+		for(j=0; j<i; j++){			
+			if(!strcmp(argp->text[i],result.text[j])){
+				continue;
+			}
+		}
+		result.text[k] = strdup(argp->text[i]);
+		k++;
+	}*/ 
+
+
+	return &result;
+}
+/*dataSet_t *
+merge_list_1_svc(dataSet_t *argp, struct svc_req *rqstp)
+{
+	static dataSet_t  result;
+
+
 	int i, j, k, m, n;
 
 	m = argp->first_len;
 	n = argp->second_len;
 
-	/*
-	 * insert server code here
-	 */
-	result.elements[0] = argp->elements[0];
+	result.elements[0] = (dataSet_t*)malloc(256);
+	result.elements[0] = "something";
+	strcpy(result.elements[0],argp->elements[0]);
 	k = 1;
 	for(i=1; i<m+n; i++){
-		for(j=0; j<i; j++){
-			if(argp->elements[i] == result.elements[j]){
+		for(j=0; j<i; j++){			
+			if(!strcmp(argp->elements[i],result.elements[j])){
 				continue;
 			}
 		}
-		result.elements[k] = argp->elements[i];
+		result.elements[k] = (dataSet_t*)malloc(256);
+		strcpy(result.elements[k],argp->elements[i]);
 		k++;
 	}
 
@@ -124,7 +169,7 @@ merge_list_1_svc(dataSet_t *argp, struct svc_req *rqstp)
 
 	return &result;
 }
-
+*/
 u_int *
 get_time_1_svc(void *argp, struct svc_req *rqstp)
 {

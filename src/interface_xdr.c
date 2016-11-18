@@ -125,17 +125,7 @@ xdr_text (XDR *xdrs, text *objp)
 }
 
 bool_t
-xdr_data_t (XDR *xdrs, data_t *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_string (xdrs, objp, ~0))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_dataSet_t (XDR *xdrs, dataSet_t *objp)
+xdr_set_t (XDR *xdrs, set_t *objp)
 {
 	register int32_t *buf;
 
@@ -149,15 +139,13 @@ xdr_set (XDR *xdrs, set *objp)
 {
 	register int32_t *buf;
 
-	int i;
-	 if (!xdr_vector (xdrs, (char *)objp->elements, 100,
-		sizeof (data_t), (xdrproc_t) xdr_data_t))
+	 if (!xdr_line_t (xdrs, &objp->text1))
 		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->num_of_sets))
+	 if (!xdr_line_t (xdrs, &objp->text2))
 		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->first_len))
+	 if (!xdr_line_t (xdrs, &objp->text3))
 		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->second_len))
+	 if (!xdr_int (xdrs, &objp->num_of_objects))
 		 return FALSE;
 	return TRUE;
 }

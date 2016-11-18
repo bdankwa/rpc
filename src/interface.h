@@ -54,15 +54,13 @@ struct text {
 };
 typedef struct text text;
 
-typedef char *data_t;
-
-typedef struct set dataSet_t;
+typedef struct set set_t;
 
 struct set {
-	data_t elements[100];
-	int num_of_sets;
-	int first_len;
-	int second_len;
+	line_t text1;
+	line_t text2;
+	line_t text3;
+	int num_of_objects;
 };
 typedef struct set set;
 
@@ -80,8 +78,8 @@ extern  matrix_t * add_matrix_1_svc(matrix_t *, struct svc_req *);
 extern  text_t * reverse_echo_1(text_t *, CLIENT *);
 extern  text_t * reverse_echo_1_svc(text_t *, struct svc_req *);
 #define MERGE_LIST 4
-extern  dataSet_t * merge_list_1(dataSet_t *, CLIENT *);
-extern  dataSet_t * merge_list_1_svc(dataSet_t *, struct svc_req *);
+extern  set_t * merge_list_1(set_t *, CLIENT *);
+extern  set_t * merge_list_1_svc(set_t *, struct svc_req *);
 #define GET_TIME 5
 extern  u_int * get_time_1(void *, CLIENT *);
 extern  u_int * get_time_1_svc(void *, struct svc_req *);
@@ -98,8 +96,8 @@ extern  matrix_t * add_matrix_1_svc();
 extern  text_t * reverse_echo_1();
 extern  text_t * reverse_echo_1_svc();
 #define MERGE_LIST 4
-extern  dataSet_t * merge_list_1();
-extern  dataSet_t * merge_list_1_svc();
+extern  set_t * merge_list_1();
+extern  set_t * merge_list_1_svc();
 #define GET_TIME 5
 extern  u_int * get_time_1();
 extern  u_int * get_time_1_svc();
@@ -119,8 +117,7 @@ extern  bool_t xdr_matrices (XDR *, matrices*);
 extern  bool_t xdr_line_t (XDR *, line_t*);
 extern  bool_t xdr_text_t (XDR *, text_t*);
 extern  bool_t xdr_text (XDR *, text*);
-extern  bool_t xdr_data_t (XDR *, data_t*);
-extern  bool_t xdr_dataSet_t (XDR *, dataSet_t*);
+extern  bool_t xdr_set_t (XDR *, set_t*);
 extern  bool_t xdr_set (XDR *, set*);
 
 #else /* K&R C */
@@ -134,8 +131,7 @@ extern bool_t xdr_matrices ();
 extern bool_t xdr_line_t ();
 extern bool_t xdr_text_t ();
 extern bool_t xdr_text ();
-extern bool_t xdr_data_t ();
-extern bool_t xdr_dataSet_t ();
+extern bool_t xdr_set_t ();
 extern bool_t xdr_set ();
 
 #endif /* K&R C */
