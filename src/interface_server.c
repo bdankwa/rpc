@@ -16,35 +16,38 @@ read_dir_1_svc(directoryName_t *argp, struct svc_req *rqstp)
 	 * insert server code here
 	 */
 	DIR *dirp;
-    struct dirent *d;
+    	struct dirent *d;
 
-    fileList_t nl;
-    fileList_t *nlp;
+    	fileList_t nl;
+    	fileList_t *nlp;
 
-    dirp = opendir(*argp);
-    if (dirp == NULL)
-    {
-    	result.err = errno;
-        return (&result);
-    }
+    	/* Open directory*/
+    	dirp = opendir(*argp);
+    	if (dirp == NULL)
+    	{
+    		result.err = errno;
+        	return (&result);
+    	}
 
-    /* Free previous result */
+    	/* Free previous result */
 
-    xdr_free(xdr_dir_res, &result);
+    	xdr_free(xdr_dir_res, &result);
 
-    nlp = &result.dir_res_u.list;
-    while (d = readdir(dirp))
-    {
-        nl = *nlp = (directoryNode *) malloc(sizeof(directoryNode));
-        nl->name = strdup(d->d_name);
-        nlp = &nl->next;
-    }
-    *nlp = NULL;
+    	/* Create a list of files in directory */
+    	nlp = &result.dir_res_u.list;
+    	while (d = readdir(dirp))
+    	{
+        	nl = *nlp = (directoryNode *) malloc(sizeof(directoryNode));
+        	nl->name = strdup(d->d_name);
+        	nlp = &nl->next;
+		//printf("reading dir: %s \n", d->d_name);
+    	}
+    	*nlp = NULL;
 
-    /* Return the result */
+    	/* Return the result */
 
-    result.err = 0;
-    closedir(dirp);
+    	result.err = 0;
+    	closedir(dirp);
 
 	return &result;
 }
@@ -60,7 +63,7 @@ add_matrix_1_svc(matrix_t *argp, struct svc_req *rqstp)
 	 */
 	m = argp->m;
 	n = argp->n;
-
+    	/* perform matrix addition */
 	for(i=0; i<m; i++){
 		for(j=0; j<n; j++){
 			result.elements[i*n+j] = argp->elements[i*n+j] + argp->elements[n*m + i*n+j];
@@ -81,8 +84,10 @@ reverse_echo_1_svc(text_t *argp, struct svc_req *rqstp)
 	/*
 	 * insert server code here
 	 */
+
 	n = strlen(argp->elements);
 	result.elements = (char*)malloc(strlen(argp->elements));
+    	/* Reverse string */
 	for(i=0; i<n; i++){
 		result.elements[i] = (char)argp->elements[n-i-1];
 	}
@@ -105,6 +110,7 @@ merge_list_1_svc(set_t *argp, struct svc_req *rqstp)
 	result.text2 = strdup("empty");
 	result.text3 = strdup("empty");
 
+    	/* Merge three elements */
 	result.text1 = strdup(argp->text1);
 	result.num_of_objects++;
 	if(strcmp(argp->text2, result.text1)){
@@ -122,54 +128,9 @@ merge_list_1_svc(set_t *argp, struct svc_req *rqstp)
 		result.num_of_objects++;		
 	}
 	else{} 
-	
-	/*k = 1;
-	for(i=1; i<10; i++){
-		for(j=0; j<i; j++){			
-			if(!strcmp(argp->text[i],result.text[j])){
-				continue;
-			}
-		}
-		result.text[k] = strdup(argp->text[i]);
-		k++;
-	}*/ 
-
 
 	return &result;
 }
-/*dataSet_t *
-merge_list_1_svc(dataSet_t *argp, struct svc_req *rqstp)
-{
-	static dataSet_t  result;
-
-
-	int i, j, k, m, n;
-
-	m = argp->first_len;
-	n = argp->second_len;
-
-	result.elements[0] = (dataSet_t*)malloc(256);
-	result.elements[0] = "something";
-	strcpy(result.elements[0],argp->elements[0]);
-	k = 1;
-	for(i=1; i<m+n; i++){
-		for(j=0; j<i; j++){			
-			if(!strcmp(argp->elements[i],result.elements[j])){
-				continue;
-			}
-		}
-		result.elements[k] = (dataSet_t*)malloc(256);
-		strcpy(result.elements[k],argp->elements[i]);
-		k++;
-	}
-
-	result.first_len = k;
-	result.second_len = 0;
-	result.num_of_sets = 1;
-
-	return &result;
-}
-*/
 u_int *
 get_time_1_svc(void *argp, struct svc_req *rqstp)
 {
@@ -178,6 +139,7 @@ get_time_1_svc(void *argp, struct svc_req *rqstp)
 	/*
 	 * insert server code here
 	 */
+    	/* Read current time */
 	result = time(NULL);
 
 	return &result;

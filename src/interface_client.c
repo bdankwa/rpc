@@ -27,12 +27,21 @@ typedef struct {
 }command_t;
 
 void printUsage(void){
-	fprintf(stderr, "Usage: ./lmptSim NumOfIterations EventProb ByzantimeProb \n");
-	fprintf(stderr, "       NumOfIterations : Number of iterations \n");
-	fprintf(stderr, "       EventProb 	: Internal or Send event probability (1=0.1, 2=0.2, 3=0.3, 4=0.4, 5=0.5) \n");
-	fprintf(stderr, "       ByzantimeProb   : Probability for Byzantine  failures (1=1, 10=0.1, 100=0.01, 1000=0.001, 10000=0.0001 \n");
+	fprintf(stdout, "************************************************************************************\n");
+	fprintf(stdout, "*                               COMMANDS                                           *\n");
+	fprintf(stdout, "************************************************************************************\n");
+	fprintf(stdout, "* rdate                       : current data and time on server                    *\n");
+	fprintf(stdout, "* rmerge text1 text2 text3    : merge two lists (only supports a total of 3 itmes) *\n");
+	fprintf(stdout, "* recho text                  : reverse echo                                       *\n");
+	fprintf(stdout, "* rdir directory              : list of files in directory on server               *\n");
+	fprintf(stdout, "* raddmat 1 24 -1 0 | 5 3 7 2 : add two matrices (matrices separated by |)         *\n");
+	fprintf(stdout, "* q                           : quit                                               *\n");
+	fprintf(stdout, "************************************************************************************\n");
 }
 
+/*****************************************
+* Tokenize a string using delimeter
+******************************************/
 int tokenize(char* line, char* delimeter, char** tokens){
 	char* token;
   	int numOfTokens = 0;
@@ -55,6 +64,9 @@ void removeChar(char *str, char ch) {
   while ((*p1++ = *p2++));
 }
 
+/*****************************************
+* Count number of "character" in string
+******************************************/
 int countChar(char* string, char character){
 	char * ch_ptr;
 	int cnt = 0, pos1 = 0, pos2 = 0;
@@ -72,14 +84,13 @@ int countChar(char* string, char character){
 
 	}
 	if((pos2 - pos1) == 1){
-		// found a second occur
 		return -1;
 	}
 	return cnt;
 }
-
-
-
+/*****************************************
+* Parse command line arguments
+******************************************/
 int parseStdIO(char* line, command_t* cmd){
 
 	const char* date_command = "rdate";
@@ -94,59 +105,45 @@ int parseStdIO(char* line, command_t* cmd){
 
 
 	if(!strncmp(line, date_command, 5)){
-		//printf("you entered data command \n %s", line);
 		cmd->operation = DATETIME;
-
 	}
 	else if(!strncmp(line, merge_command, 6)){
 	
 		int ntoks = tokenize(line, " ", tokens);
 
 		if(ntoks < 4){
+			printf("ERROR! \n");
 			return -1;		
 		}
 
 		for(i=0; i<3; i++){
 			removeChar(tokens[i+1], '\n');
 			cmd->list1[i] = tokens[i+1];
-			//printf("argument %s ",cmd->list1[i]);
 		}	
 
-		/*cmd->list1[0] = "ak";
-		cmd->list1[1] = "bf";
-		cmd->list1[2] = "ak";
-		cmd->list2[1] = "ct";
-
-		cmd->list1_len = 2;
-		cmd->list2_len = 2;*/
-
-		cmd->operation = MERGE;
-		
+		cmd->operation = MERGE;		
 	}
 	else if(!strncmp(line, echo_command, 5)){
 
-		//int ntoks = tokenize(line, " ", tokens);
-
 		if(strlen(line) < 6){
+			printf("ERROR! \n");
 			return -1;		
 		}
 
 		removeChar(line+5, '\n');
         		
 		cmd->list1[0] = line+5;;
-		/*cmd->list1[1] = "e";
-		cmd->list1[2] = "a";
-		cmd->list1[3] = "d";
-		cmd->list1[4] = " ";
-		cmd->list1[5] = "b";
-		cmd->list1[6] = "e";
-		cmd->list1[7] = "e";
-		cmd->list1[8] = "f"; */
 		cmd->list1_len = strlen(line+5);
 		cmd->operation = REV_ECHO;
 	}
 	else if(!strncmp(line, rdir_command, 4)){
-		cmd->list1[0] = "/home";
+
+		if(tokenize(line, " ", tokens) != 2){
+			printf("ERROR! \n");
+			return -1;
+		}		
+		cmd->list1[0] = tokens[1];
+		removeChar(tokens[1], '\n');
 		cmd->operation = LISTDIR;
 
 	}
@@ -159,12 +156,12 @@ int parseStdIO(char* line, command_t* cmd){
 		int nelements = 0;
 
 		if(countChar(line, '|') < 1){
-			printf("exit 1 \n");
+			printf("ERROR! \n");
 			return -1;
 		}
 
 		if(tokenize(line+7, "|", tokens) < 2){
-			printf("exit 2 \n");
+			printf("ERROR! \n");
 			return -1;
 		}
 
@@ -172,39 +169,22 @@ int parseStdIO(char* line, command_t* cmd){
 		token2 = strdup(tokens[1]);
 		removeChar(token1, '\n');
 		removeChar(token2, '\n');
-		printf("token1 %s \n", token1);
-		printf("token2 %s \n", token2);
-
 
 		if(((nelements = tokenize(token1, " ", mat1_tokens)) != tokenize(token2, " ", mat2_tokens))){
-			printf("exit 3 \n");
+			printf("ERROR! \n");
 			return -1;
 		}
-
-		printf("nelements %i \n", nelements);
-		/*printf("mat1tokens[0] %s \n", mat1_tokens[0]);
-		printf("mat2tokens[1] %s \n", mat2_tokens[1]);*/
-
 
 		for(i=0; i<nelements; i++){
 			removeChar(mat1_tokens[i], '\n');
 			removeChar(mat2_tokens[i], '\n');
 			cmd->list1[i] = mat1_tokens[i];
 			cmd->list2[i] = mat2_tokens[i];
-		printf("mat1tokens[0] %s \n", mat1_tokens[1]);
-		printf("mat2tokens[1] %s \n", mat2_tokens[1]);
 		}
 		cmd->operation = ADD_MAT;
 		cmd->list1_len = nelements;
 		cmd->list2_len = nelements;
 
-		/*for(i=0; i<4; i++){
-			cmd->list1[i] = "1";
-			cmd->list2[i] = "25";
-		}
-		cmd->operation = ADD_MAT;
-		cmd->list1_len = 4;
-		cmd->list2_len = 4;*/
 	}
 	else if(!strncmp(line, quit_command, 1)){
 		cmd->operation = QUIT;
@@ -235,6 +215,7 @@ interface_progs_1(char *host)
 
 	command_t cmd;
 	char line[1024];
+	fileList_t dnode;
 
 
 #ifndef	DEBUG
@@ -244,7 +225,11 @@ interface_progs_1(char *host)
 		exit (1);
 	}
 #endif	/* DEBUG */
+/*****************************************
+* Clients command line interface
+******************************************/
 	while(1){
+		printUsage();
 		printf("RPC> ");
 		while(fgets(line, sizeof(line), stdin) != NULL){
 			if(parseStdIO(line, &cmd) == -1){
@@ -276,18 +261,8 @@ interface_progs_1(char *host)
 					printf("%s ", result_4->text3);
 				}
 				printf("\n");
-
-				/*for(i=0; i<result_4->first_len; i++){
-					printf("%s ", result_4->elements[i]);
-				}
-				printf("\n");*/
 				break;
 			case REV_ECHO:
-				/*for(i=0; i<cmd.list1_len; i++){
-					reverse_echo_1_arg.elements[i] = (char)*cmd.list1[i];
-					reverse_echo_1_arg.elements = strdup(cmd.list1);
-				}*/
-				//reverse_echo_1_arg.elements = list1[0];
 				reverse_echo_1_arg.elements = strdup(cmd.list1[0]);
 				reverse_echo_1_arg.num_of_chars = cmd.list1_len;
 
@@ -299,22 +274,32 @@ interface_progs_1(char *host)
 				
 				break;
 			case LISTDIR:
-				printf("about to list dir \n");
+				
 				read_dir_1_arg = strdup(cmd.list1[0]);
 				result_1 = read_dir_1(&read_dir_1_arg, clnt);
 				if (result_1 == (dir_res *) NULL) {
 					clnt_perror (clnt, "call failed 4");
 				}
+				if(result_1->err){
+					printf("remote directory %s: does not exits. \n", cmd.list1[0]);
+				}
+				else{
+					printf("remote directory %s: \n", cmd.list1[0]);
+					dnode = result_1->dir_res_u.list;
+						while(dnode != NULL){
+						printf("%s \n", dnode->name);					
+						dnode = dnode->next;				
+					}
+				}
+				
 				break;
 			case ADD_MAT:
 				N = cmd.list1_len;
 				for(i=0; i<cmd.list1_len; i++){
 					add_matrix_1_arg.elements[i] = atoi(cmd.list1[i]);
-					printf("mat A[%i] = %i \n ", i, add_matrix_1_arg.elements[i]);
 				}				
 				for(i=0; i<cmd.list2_len; i++){
 					add_matrix_1_arg.elements[N+i] = atoi(cmd.list2[i]);
-					printf("mat B[%i] = %i \n ", i, add_matrix_1_arg.elements[N+i]);
 				}
 				m = (int)sqrt((double)N);
 				n = (int)sqrt((double)N);

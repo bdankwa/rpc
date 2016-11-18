@@ -38,6 +38,7 @@ read_dir_1_svc(directoryName_t *argp, struct svc_req *rqstp)
         nl = *nlp = (directoryNode *) malloc(sizeof(directoryNode));
         nl->name = strdup(d->d_name);
         nlp = &nl->next;
+	//printf("reading dir: %s \n", d->d_name);
     }
     *nlp = NULL;
 
